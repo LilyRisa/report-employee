@@ -16,23 +16,64 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+//login
+Route::get('/login', ['as' => 'login', 'uses' => 'AuthController@index']);
+Route::post('/postlogin', ['as' => 'post_login', 'uses' => 'AuthController@authenticate']);
+Route::get('/logout', ['as' => 'logout', 'uses' => 'AuthController@logout']);
+// middleware
 
-// home
-Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
-Route::get('/test', ['as' => 'test', 'uses' => 'HomeController@test']);
-Route::get('/employee',['as' => 'employee', 'uses' => 'HomeController@employee_index']);
-Route::get('/get_employee',['as' => 'get_employee', 'uses' => 'HomeController@employee_get']);
-Route::get('/rawemployee',['as' => 'employee_raw', 'uses' => 'HomeController@employeeraw']);
-Route::post('/employeerawpost',['as' => 'post_employee_raw', 'uses' => 'HomeController@Postemployeeraw']);
+Route::group(['middleware' => 'authapi'], function(){
+        // set config 
+    Route::get('/setconfig', ['as' => 'set_config', 'uses' => 'SetConfigController@index']);
+    Route::post('/setconfig/post', ['as' => 'set_config_post', 'uses' => 'SetConfigController@post']);
+    // home
+    Route::group(['middleware' => 'setconfig'], function(){
+        Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
+        Route::get('/test', ['as' => 'test', 'uses' => 'HomeController@test']);
 
-//report
-Route::get('/excel-report-today', ['as' => 'excel_report_today', 'uses' => 'ReportController@ExcelReport']);
-Route::get('/excel-report/{time_start}/{time_end}', ['as' => 'excel_report_time', 'uses' => 'ReportController@ExcelReportTimeRange']);
-Route::post('/pass-variable', ['as' => 'pass_variable', 'uses' => 'ReportController@PassVar']);
-//system
-Route::get('/system-config', ['as' => 'sys_conf', 'uses' => 'SystemController@index']);
-Route::post('/system-config/post', ['as' => 'sys_conf_post', 'uses' => 'SystemController@post']);
-Route::get('/sync', ['as' => 'sync', 'uses' => 'SyncController@index']);
-//home field
 
-Route::get('/get-today-count',['as' => 'count_today', 'uses' => 'HomeController@getTodayCount']);
+        //Route::get('/employee',['as' => 'employee', 'uses' => 'HomeController@employee_index']);
+        Route::get('/get_employee',['as' => 'get_employee', 'uses' => 'HomeController@employee_get']);
+
+        Route::get('/employee',['as' => 'employee_raw', 'uses' => 'HomeController@employeeraw']);
+        Route::post('/employeerawpost',['as' => 'post_employee_raw', 'uses' => 'HomeController@Postemployeeraw']);
+
+        //report
+        Route::get('/excel-report-today', ['as' => 'excel_report_today', 'uses' => 'ReportController@ExcelReport']);
+        Route::get('/excel-report/{time_start}/{time_end}/{thermal}', ['as' => 'excel_report_time', 'uses' => 'ReportController@ExcelReportTimeRange']);
+        Route::post('/pass-variable', ['as' => 'pass_variable', 'uses' => 'ReportController@PassVar']);
+
+        Route::post('/pass-variable_pro', ['as' => 'pass_variable_pro', 'uses' => 'ReportController@PassVarPro']);
+        Route::get('/excel-report-today-pro', ['as' => 'excel_report_today_pro', 'uses' => 'ReportController@ExcelReportPro']);
+        Route::get('/excel-report-pro/{time_start}/{time_end}/{thermal}', ['as' => 'excel_report_time_pro', 'uses' => 'ReportController@ExcelReportTimeRangePro']);
+        //system
+        // Route::get('/system-config', ['as' => 'sys_conf', 'uses' => 'SystemController@index']);
+        // Route::post('/system-config/post', ['as' => 'sys_conf_post', 'uses' => 'SystemController@post']);
+
+        //home field
+
+        Route::get('/get-today-count',['as' => 'count_today', 'uses' => 'HomeController@getTodayCount']);
+
+        //sync
+        Route::get('/sync', ['as' => 'sync', 'uses' => 'SyncController@index']);
+        Route::get('/ther_library',['as' => 'ther_library', 'uses' => 'SyncController@getLibrary']);
+        Route::post('/post_sync',['as' => 'post_sync', 'uses' => 'SyncController@Sync']);
+
+        // permiss
+        Route::get('/permiss',['as' => 'permiss', 'uses' => 'PermissionController@index']);
+        Route::get('/subject_permission',['as' => 'subject_permiss', 'uses' => 'SubjectPermisionController@index']);
+
+        // quyền 
+        Route::post('/department_in_group',['as' => 'dp_in_gr', 'uses' => 'PermissionController@GetDPinGR']);
+        Route::post('/save_dp',['as' => 'save_dp', 'uses' => 'PermissionController@SaveDepartmentInGroup']);
+
+        // subject premission
+        Route::post('/subject_in_group',['as' => 'sj_in_gr', 'uses' => 'SubjectPermisionController@GetSJinGR']);
+        Route::post('/save_subject',['as' => 'save_sj', 'uses' => 'SubjectPermisionController@SaveSubjectInGroup']);
+
+
+    });
+
+});
+
+

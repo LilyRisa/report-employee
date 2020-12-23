@@ -7,6 +7,7 @@ use App\Providers\Requestapi;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Response;
+use Config;
 
 class ReportController extends Controller
 {
@@ -55,23 +56,23 @@ class ReportController extends Controller
         
     }
 
-    public function ExcelReportTimeRange($time_start , $time_end){
+    public function ExcelReportTimeRange($time_start , $time_end , $thermal){
         $opts = array('http' =>
         array(
+            'timeout' => 1200,
             'method'  => 'GET',
             'header'  => 'Content-Type: application/json',
             'content' => json_encode(array(
-                    "start"=> ((int)$time_start_now)*1000,
-                    "end"=> ((int)$time_end_now)*1000,
-                    "thermal_ip"=> $data[0]->thermal_ip,
-                    "hiface_ip"=> $data[0]->hiface_ip,
-                    "username"=> $data[0]->username,
-                    "password"=> $data[0]->password
+                'time_range' => [
+                    "start"=> ((int)$time_start)*1000,
+                    "end"=> ((int)$time_end)*1000,
+                ],
+                'thermal_name' => $thermal,
                 ))
             )
         );
         $context  = stream_context_create($opts);
-        $data = file_get_contents('http://'.$data[0]->Server_ip.'/api/v1/report/excel', false, $context);
+        $data = file_get_contents(config('app.SERVER_IP').'/api/v1/report/excel', false, $context);
         $headers = array(
             'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         );
@@ -88,6 +89,7 @@ class ReportController extends Controller
     public function PassVar(Request $request){
         $start_time = explode('/',$request->input('start'));
         $end_time = explode('/',$request->input('end'));
+        $thermal = $request->input('thermal');
         $start_time_stamp =  json_encode(Carbon::create($start_time[2], $start_time[1], $start_time[0], 00, 00, 00, 'asia/ho_chi_minh')->settings([
             'toJsonFormat' => function ($date) {
                 return $date->getTimestamp();
@@ -99,7 +101,54 @@ class ReportController extends Controller
             },
         ]));
 
-        $link = route('excel_report_time',['time_start' => $start_time_stamp, 'time_end' => $end_time_stamp]);
+        $link = route('excel_report_time',['time_start' => $start_time_stamp, 'time_end' => $end_time_stamp, 'thermal' => $thermal]);
         return response()->json(array('link' => $link));
+    }
+    public function PassVarPro(Request $request){
+        $start_time = explode('/',$request->input('start'));
+        $end_time = explode('/',$request->input('end'));
+        $thermal = $request->input('thermal');
+        $start_time_stamp =  json_encode(Carbon::create($start_time[2], $start_time[1], $start_time[0], 00, 00, 00, 'asia/ho_chi_minh')->settings([
+            'toJsonFormat' => function ($date) {
+                return $date->getTimestamp();
+            },
+        ]));
+        $end_time_stamp =  json_encode(Carbon::create($end_time[2], $end_time[1], ((int)$end_time[0]) +1, 00, 00, 00, 'asia/ho_chi_minh')->settings([
+            'toJsonFormat' => function ($date) {
+                return $date->getTimestamp();
+            },
+        ]));
+
+        $link = route('excel_report_time_pro',['time_start' => $start_time_stamp, 'time_end' => $end_time_stamp, 'thermal' => $thermal]);
+        return response()->json(array('link' => $link));
+    }
+    public function ExcelReportTimeRangePro($time_start , $time_end , $thermal){
+        $opts = array('http' =>
+        array(
+            'timeout' => 1200,
+            'method'  => 'GET',
+            'header'  => 'Content-Type: application/json',
+            'content' => json_encode(array(
+                'time_range' => [
+                    "start"=> ((int)$time_start)*1000,
+                    "end"=> ((int)$time_end)*1000,
+                ],
+                'thermal_name' => $thermal,
+                ))
+            )
+        );
+        $context  = stream_context_create($opts);
+        $data = file_get_contents(config('app.SERVER_IP').'/api/v1/report/excel-pro', false, $context);
+        $headers = array(
+            'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+        //dd($data);
+        return Response($data)->header('Cache-Control', 'no-cache private')
+        ->header('Content-Description', 'File Transfer')
+        ->header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        ->header('Content-length', strlen($data))
+        ->header('Content-Disposition', 'attachment; filename=Excel-reports-'.Carbon::createFromTimestamp(intval($time_start))->timezone('asia/ho_chi_minh')->format('Y-m-d').' | '.Carbon::createFromTimestamp(intval($time_end))->timezone('asia/ho_chi_minh')->format('Y-m-d').'.xlsx')
+        ->header('Content-Transfer-Encoding', 'binary');
+
     }
 }

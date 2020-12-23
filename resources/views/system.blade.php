@@ -15,16 +15,12 @@
                         <div class="row p-t-20">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="" class="control-label">Server ip</label>
-                            <input type="text" class="form-control" value="{{$data->Server_ip}}">
-                            </div>
-                            <div class="form-group">
                                 <label for="" class="control-label">Thermal ip</label>
-                                <input type="text" class="form-control" value="{{$data->thermal_ip}}">
+                                <input type="text" class="form-control" id="thermal" value="@if($data != null)@foreach($data->thermal_info as $ther){{$ther->ip}},@endforeach @endif">
                             </div>
                             <div class="form-group">
                                 <label for="" class="control-label">Hiface ip</label>
-                                <input type="text" class="form-control" value="{{$data->hiface_ip}}">
+                                <input type="text" class="form-control" value="@if($data != null){{$data->hiface_info->ip}}@endif">
                             </div>
 
                             
@@ -36,11 +32,11 @@
                             
                             <div class="form-group">
                                 <label for="" class="control-label">Username</label>
-                                <input type="text" class="form-control" value="{{$data->username}}">
+                                <input type="text" class="form-control" value="@if($data != null){{$data->hiface_info->username}}@endif">
                             </div>
                             <div class="form-group">
                                 <label for="" class="control-label">Password</label>
-                                <input type="text" class="form-control" value="{{$data->password}}">
+                                <input type="password" class="form-control" value="@if($data != null){{$data->hiface_info->password}}@endif">
                             </div>
                         </div>
                     </div>
@@ -61,12 +57,16 @@
 @include('layout.script')
     <script>
         $(function(){
+            $('#thermal').tagsInput({
+                'defaultText':'',
+                'height':'44px',
+                'width':'100%',
+            });
             $('#submit').on('click',(e)=>{
                 e.preventDefault();
                 var inp = $('.form-group input');
                 var data = {
-                    'Server_ip': inp.eq(0).val(),
-                    'thermal_ip': inp.eq(1).val(),
+                    'thermal_ip': inp.eq(0).val(),
                     'hiface_ip':inp.eq(2).val(),
                     'username':inp.eq(3).val(),
                     'password':inp.eq(4).val(),
@@ -74,7 +74,7 @@
                 }
                 console.log(data);
                 $.ajax({
-                    url: '{{route('sys_conf_post')}}',
+                    url: '{{route('set_config_post')}}',
                     method: 'post',
                     headers: {
                         'X-CSRF-Token': '{{csrf_token()}}' 
@@ -82,15 +82,30 @@
                     data : data
                 }).done(result => {
                     console.log(result);
-                    if(result.status == 200){
-                        setTimeout(location.reload(),5000);
+                    //setTimeout(function(){location.reload();},1000);
+
+                    if(result.code == 0){
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            buttonFail : undefined,
+                            top: "25%",
+                            input: false,
+                            message: "Cập nhật thành công",
+                            queue: true,
+                            speed: 200,
+                        }).done(function(){
+                            location.reload()
+                        });
+                        //setTimeout(location.reload(),5000);
                     }else{
-                        $.notify({
-                            icon: 'pe-7s-gift',
-                            message: "Lỗi không xác định"
-                            },{
-                            type: 'danger',
-                            timer: 9000
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            buttonFail : undefined,
+                            top: "25%",
+                            input: false,
+                            message: "Lỗi không xác định",
+                            queue: true,
+                            speed: 200,
                         });
                     }
                     //location.reload();

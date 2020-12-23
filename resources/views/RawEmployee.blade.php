@@ -18,25 +18,38 @@
                        <div class="col-3">
                            <input id="timerange" type="text" class="form-control" >
                        </div>
-                       <div class="col-1">
-                           <button class="btn btn-warning" id="querytime" ><i class="fas fa-search" ></i></button>
-                       </div>
+                       
                        <div class="col-4">
+                           <div class="row">
+                               <div>
+                                   <select name="" class="form-control" id="thermal">
+                                       @if($data != null)
+                                        @foreach($data->thermalInfo as $v)
+                                   <option value="{{$v->name}}"@if($v->name == 'Thermal_2') selected @endif>{{$v->name}}</option>
+                                        @endforeach
+                                        @endif
+                                    </select> 
+                               </div>
+                                <div class="dropdown" style="position: absolute; right: 8px;">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Tổng hợp dữ liệu
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="#" id="today_check">Quản lý ra vào hôm nay</a>
+                                    <a class="dropdown-item" href="#" id="ago_check">Tổng hợp dữ liệu</a>
+                                    </div>
+                                </div>
+                           </div>
                            {{-- <select name="" class="form-control" id="change_mode">
                                 <option value="1" >Quản lý ra vào hôm nay</option>
                                 <option value="2" selected>Tổng hợp dữ liệu</option>
                            </select> --}}
-                           <div class="dropdown" style="position: absolute; right: 8px;">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                             Tổng hợp dữ liệu
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                              <a class="dropdown-item" href="#" id="today_check">Quản lý ra vào hôm nay</a>
-                              <a class="dropdown-item" href="#" id="ago_check">Tổng hợp dữ liệu</a>
-                            </div>
-                          </div>
+                           
                           
                        </div>
+                       <div class="col-1">
+                        <button class="btn btn-warning" id="querytime" ><i class="fas fa-search" ></i></button>
+                    </div>
                     </div>
                {{-- </div> --}}
                 <h6 class="card-subtitle">Xuất báo cáo ra định dạng Copy, CSV, Excel, PDF & Print</h6>
@@ -98,9 +111,12 @@
 @include('layout.script')
 <script>
     $(function () {
+        // dropdown
         $('#today_check').on('click',()=>{
+
             $('#dropdownMenuButton').text('Quản lý ra vào hôm nay');
             $('#timerange').prop('disabled',true);
+            $('#timerange').val('{{str_replace("-","/",$timenow)}} - {{str_replace("-","/",$timenow)}}');
                 $('#querytime').prop('disabled',true);
                 load.clear().draw();
                 var tmp = `
@@ -123,7 +139,7 @@
                 method: 'get'
                 }).done(result => {
                     $('#loadtr').hide();
-                    console.log(result);
+                    console.log('dropdown today');
                     $('#loadtr').hide();
                     result.forEach(item => {
                         load.row.add([`<img src="${item.image_path}" width="53" class="img-responsive avatar" >`,
@@ -139,6 +155,7 @@
                     });                
                 });
         });
+        // dropdown 
         $('#ago_check').on('click',()=>{
             $('#dropdownMenuButton').text('Tổng hợp dữ liệu');
             $('#timerange').prop('disabled',false);
@@ -168,10 +185,11 @@
                     },
                     data: {
                         'timerange' : $('#timerange').val(),
+                        'thermal' : $('#thermal').val()
                     }
                 }).done(result => {
                     $('#loadtr').hide();
-                    //console.log(result);
+                    console.log('dropdown');
                     load.clear().draw();
                     result.forEach(item_query=>{
                         load.row.add([`<img src="${item_query.image_path}" width="53" class="img-responsive avatar" >`,
@@ -260,17 +278,16 @@
         $('.dt-buttons').children().attr('style','display:none');
         var select_export = `
         <select class="form-control" id="val-export" style="width:64%">
-            <option>copy</option>
-            <option>csv</option>
-            <option>print</option>
-            <option>pdf</option>
+            <option>excel pro</option>
             <option>excel</option>
         </select>
         <button class="btn btn-warning" id="export-file" style="margin-bottom:4px"><i class="fas fa-download"></i></button>
+
         `;
 
         $('.dt-buttons').append(select_export);
 
+        // export excel time range
         $('#export-file').on('click', e =>{
             e.preventDefault();
             let btn = $('#val-export option:selected').text();
@@ -286,12 +303,30 @@
                     },
                     data : {
                         'start' : t_range[0],
-                        'end' : t_range[1]
+                        'end' : t_range[1],
+                        'thermal' : $('#thermal').val()
                     }
                 }).done(result => {
                     window.open(result.link,'_blank');
                 });
                 
+            }else if(btn == 'excel pro'){
+                var t_range = $('#timerange').val();
+                t_range = t_range.split(' - ');
+                $.ajax({
+                    url : '{{route('pass_variable_pro')}}',
+                    method: 'post',
+                    headers: {
+                        'X-CSRF-Token': '{{csrf_token()}}',
+                    },
+                    data : {
+                        'start' : t_range[0],
+                        'end' : t_range[1],
+                        'thermal' : $('#thermal').val()
+                    }
+                }).done(result => {
+                    window.open(result.link,'_blank');
+                });
             }else{
                 $('.buttons-'+btn).click();
             }
@@ -306,7 +341,7 @@
             method: 'get'
             }).done(result => {
                 $('#loadtr').hide();
-                //console.log(result);
+                console.log(result);
                 $('#loadtr').hide();
                 result.forEach(item => {
                     load.row.add([`<img src="${item.image_path}" width="53" class="img-responsive avatar" >`,
@@ -353,6 +388,7 @@
                },
                 data: {
                     'timerange' : $('#timerange').val(),
+                    'thermal': $('#thermal').val()
                 }
             }).done(result => {
                 $('#loadtr').hide();

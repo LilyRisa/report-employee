@@ -36,3 +36,22 @@
     <script src="{{asset('js/buttons.html5.min.js')}}"></script>
     <script src="{{asset('js/buttons.print.min.js')}}"></script>
     <script src="{{asset('js/notify.min.js')}}"></script>
+    <script src="{{asset('js/jquery.tagsinput.min.js')}}"></script>
+    <script src="{{asset('js/dropdowntree.js')}}"></script>
+    <script src="{{asset('js/multi.min.js')}}"></script>
+    <script src="{{asset('js/messagebox.min.js')}}"></script>
+    <script>
+        // $(document).ready(function(){
+        //     $('.mini-sidebar li').on({
+        //             mouseenter: function () {
+        //                 $('.mini-sidebar .sidebar-nav a').attr('style','font-size: 1.09375rem');
+        //                 console.log('hover');
+        //             },
+        //             mouseleave: function () {
+        //                 $('.mini-sidebar .sidebar-nav a').attr('style','font-size: 0px');
+        //                 console.log('leave');
+        //             }
+        //         });
+        // });
+
+    </script>

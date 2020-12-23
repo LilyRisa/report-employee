@@ -39,24 +39,23 @@
                 <li>
                     <a href="{{route('home')}}"><i class="icon-speedometer"></i> Dashbroad</a></li>
                 </li>   
-                <li> <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)"
-                        aria-expanded="false"><i class="fas fa-users"></i><span class="hide-menu">Nhân viên
-                            </span></a>
-                    <ul aria-expanded="false" class="collapse">
-                    <li><a href="{{route('employee_raw')}}">Quản lý nhân viên</a></li>
-                        {{-- <li><a href="#">Remaining employee in the office real time / cut-off time</a></li>
-                        <li><a href="#">Total visitor(s) active today (in/out)</a></li>
-                        <li><a href="#">Remaining visitor(s) in the office real time / cut-off time</a></li> --}}
-                    </ul>
+                <li> <a href="{{route('employee_raw')}}"><i class="fas fa-users"></i>Nhân viên</a> 
                 </li>
 
-            <li> <a href="{{route('sys_conf')}}"><i class="ti-settings"></i>System config
-                        </a>
+                <li><a href="{{route('permiss')}}"><i class="fas fa-key"></i>PQ Phòng ban</a>
+                </li>
+                <li><a href="{{route('subject_permiss')}}"><i class="fas fa-key"></i>PQ nhân viên</a>
                 </li>
 
                 <li><a href="{{route('sync')}}"><i class="fas fa-sync-alt"></i>Sync</a>
                 </li>
-
+                <li> <a href="{{route('set_config')}}"><i class="ti-settings"></i>cấu hình hệ thống
+                    </a>
+                </li>
+                
+                <li> <a href="{{route('logout')}}"><i class=" fas fa-power-off"></i>Đăng xuất
+                </a>
+            </li>
                 {{-- <li> <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)"
                     aria-expanded="false"><i class="icon-folder-alt"></i><span class="hide-menu">Thống kê
                         </span></a>

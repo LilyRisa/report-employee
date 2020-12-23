@@ -24844,16 +24844,18 @@ a.badge-purple:focus {
     color: #413657
 }
 
-@keyframes progress-bar-stripes {
+
+/* @keyframes progress-bar-stripes {
     from {
         background-position: auto 0
     }
     to {
         background-position: 0 0
     }
-}
+} */
 
-.progress {
+
+/* .progress {
     display: flex;
     height: auto;
     overflow: hidden;
@@ -24861,9 +24863,10 @@ a.badge-purple:focus {
     font-size: .65625rem;
     background-color: #f8f9fa;
     border-radius: .25rem
-}
+} */
 
-.progress-bar {
+
+/* .progress-bar {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -24873,28 +24876,32 @@ a.badge-purple:focus {
     white-space: nowrap;
     background-color: #fb9678;
     transition: width .6s ease
-}
+} */
 
-@media (prefers-reduced-motion:reduce) {
+
+/* @media (prefers-reduced-motion:reduce) {
     .progress-bar {
         transition: none
     }
-}
+} */
 
-.progress-bar-striped {
+
+/* .progress-bar-striped {
     background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-size: auto auto
-}
+} */
 
-.progress-bar-animated {
+
+/* .progress-bar-animated {
     animation: progress-bar-stripes 1s linear infinite
-}
+} */
 
-@media (prefers-reduced-motion:reduce) {
+
+/* @media (prefers-reduced-motion:reduce) {
     .progress-bar-animated {
         animation: none
     }
-}
+} */
 
 .media {
     display: flex;
@@ -46530,6 +46537,13 @@ html body .waves-notransition {
     }
     .mini-sidebar .sidebar-nav {
         background: 0 0
+    }
+    .mini-sidebar .sidebar-nav a{
+        font-size: 0;
+    }
+    .mini-sidebar .sidebar-nav #sidebarnav>li>a:hover{
+        font-size: 14px;
+        font-weight: 500;
     }
     .mini-sidebar .sidebar-nav #sidebarnav li {
         position: relative

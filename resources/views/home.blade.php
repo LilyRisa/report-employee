@@ -27,8 +27,8 @@
                 <div class="d-flex flex-row">
                     <div class="round align-self-center round-info"><i class="ti-wallet"></i></div>
                     <div class="m-l-10 align-self-center">
-                        <h3 class="m-b-0">342</h3>
-                        <h5 class="text-muted m-b-0">New Products</h5></div>
+                        <h3 class="m-b-0" id="remaining"></h3>
+                        <h5 class="text-muted m-b-0">Nhân viên trong văn phòng</h5></div>
                 </div>
             </div>
         </div>
@@ -110,22 +110,18 @@
 
 @section('script')
     @include('layout.script')
-<script>
-    function getdata(){
-        return $.ajax({
+<script>                                  
+    (function(){
+        setInterval(function(){
+        $.ajax({
             url: '{{route('count_today')}}',
             method : 'get'
-        });
-    }
-    function load(){
-        getdata().done(result => {
-            $('#count_today').text(result.count_today);
-            console.log(result);
+        }).done(result => {
+            $('#count_today').text(result.count_today).fadeIn();
+            $('#remaining').text(result.number_of_employee).fadeIn();
         });      
-    }
-    $(function(){
-        setInterval(load(),3000);
-    });
+    },3000);
+    })();
 </script>
 
 @endsection

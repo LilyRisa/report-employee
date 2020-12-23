@@ -6,7 +6,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{'images/favicon.png'}}">
-    <title>Admin pannel</title>
+    <title>Unilever</title>
     <link rel="stylesheet" type="text/css"
         href="{{asset('css/dataTables.bootstrap4.css')}}">
     <link rel="stylesheet" type="text/css"
@@ -19,6 +19,12 @@
     <!-- Dashboard 1 Page CSS -->
     <link href="{{asset('css/pages/dashboard1.css')}}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('css/daterangepicker.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{asset('css/jquery.tagsinput.min.css')}}" />
+    <link type="text/css" href="{{asset('css/dropdowntree.css')}}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{asset('css/multi.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('css/messagebox.min.css')}}">
+
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
