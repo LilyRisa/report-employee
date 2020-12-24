@@ -58,14 +58,24 @@
                     <table id="example23" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                         <thead>
                             <tr>
-                                <th>Ảnh</th>   
-                                <th>Tên</th>
-                                <th>Phòng ban</th>
-                                <th>Vị trí</th>
-                                <th>Nhiệt độ</th>
-                                <th>Mã nhân viên</th>
-                                <th>Giờ vào</th>
-                                <th>Giờ ra</th>
+                                <th>ID</th>   
+                                <th>Avatar</th>   
+                                <th>name</th>
+                                <th>Function</th>
+                                <th>Position</th>
+                                <th>Location</th>
+                                <th>Company</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Gender</th>
+                                <th>Birthday</th>
+                                <th>Date</th>
+                                <th>Duration</th>
+                                <th>Sub function</th>
+                                <th>Time checkin</th>
+                                <th>Time checkout</th>
+                                <th>Employee type</th>
+                                <th>Entry date</th>
                                  
                             </tr>
                         </thead>
@@ -88,6 +98,16 @@
                                     <div class="loader__figure"></div>
                                     <p class="loader__label">Loading</p>
                                 </div></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
                                 <td style="display:none"></td>
                                 <td style="display:none"></td>
                                 <td style="display:none"></td>
@@ -131,6 +151,15 @@
                         <td style="display:none"></td>
                         <td style="display:none"></td>
                         <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
                     </tr>
                     `;
                 $('#example23 tbody').append(tmp);
@@ -142,14 +171,25 @@
                     console.log('dropdown today');
                     $('#loadtr').hide();
                     result.forEach(item => {
-                        load.row.add([`<img src="${item.image_path}" width="53" class="img-responsive avatar" >`,
-                            item.name,
-                            item.department,
-                            item.position,
-                            item.temperature,
-                            item.employee_id,
-                            item.time_checkin,
-                            item.time_checkout
+                        load.row.add([
+                           item.employee_id, 
+                        `<img src="${item.image_path}" width="53" class="img-responsive avatar" >`, 
+                        item.name,
+                        item.function,
+                        item.position,
+                        item.location,
+                        item.company,
+                        item.email,
+                        item.phone,
+                        item.gender,
+                        item.birthday,
+                        item.date,
+                        item.duration,
+                        item.sub_function,
+                        item.time_checkin,
+                        item.time_checkout,
+                        item.employee_type,
+                        item.entry_date
                         ]).draw();
                             
                     });                
@@ -174,6 +214,15 @@
                         <td style="display:none"></td>
                         <td style="display:none"></td>
                         <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
                     </tr>
                     `;
                     $('#example23 tbody').append(tmp);
@@ -191,15 +240,26 @@
                     $('#loadtr').hide();
                     console.log('dropdown');
                     load.clear().draw();
-                    result.forEach(item_query=>{
-                        load.row.add([`<img src="${item_query.image_path}" width="53" class="img-responsive avatar" >`,
-                            item_query.name,
-                            item_query.department,
-                            item_query.position,
-                            item_query.temperature,
-                            item_query.employee_id,
-                            item_query.time_checkin,
-                            item_query.time_checkout
+                    result.forEach(item =>{
+                        load.row.add([
+                            item.employee_id,
+                            `<img src="${item.image_path}" width="53" class="img-responsive avatar" >`,
+                            item.name,
+                            item.function,
+                            item.position,
+                            item.location,
+                            item.company,
+                            item.email,
+                            item.phone,
+                            item.gender,
+                            item.birthday != null ? item.birthday : '',
+                            item.date,
+                            item.duration,
+                            item.sub_function,
+                            item.time_checkin,
+                            item.time_checkout,
+                            item.employee_type,
+                            item.entry_date
                         ]).draw();
                     });
                 });
@@ -278,7 +338,7 @@
         $('.dt-buttons').children().attr('style','display:none');
         var select_export = `
         <select class="form-control" id="val-export" style="width:64%">
-            <option>excel pro</option>
+            <option>excel raw</option>
             <option>excel</option>
         </select>
         <button class="btn btn-warning" id="export-file" style="margin-bottom:4px"><i class="fas fa-download"></i></button>
@@ -310,11 +370,11 @@
                     window.open(result.link,'_blank');
                 });
                 
-            }else if(btn == 'excel pro'){
+            }else if(btn == 'excel raw'){
                 var t_range = $('#timerange').val();
                 t_range = t_range.split(' - ');
                 $.ajax({
-                    url : '{{route('pass_variable_pro')}}',
+                    url : '{{route('pass_variable_raw')}}',
                     method: 'post',
                     headers: {
                         'X-CSRF-Token': '{{csrf_token()}}',
@@ -344,15 +404,26 @@
                 console.log(result);
                 $('#loadtr').hide();
                 result.forEach(item => {
-                    load.row.add([`<img src="${item.image_path}" width="53" class="img-responsive avatar" >`,
+                    load.row.add([
+                        item.employee_id, 
+                        `<img src="${item.image_path}" width="53" class="img-responsive avatar" >`, 
                         item.name,
-                        item.department,
+                        item.function,
                         item.position,
-                        item.temperature,
-                        item.employee_id,
+                        item.location,
+                        item.company,
+                        item.email,
+                        item.phone,
+                        item.gender,
+                        item.birthday,
+                        item.date,
+                        item.duration,
+                        item.sub_function,
                         item.time_checkin,
-                        item.time_checkout
-                    ]).draw();
+                        item.time_checkout,
+                        item.employee_type,
+                        item.entry_date
+                        ]).draw();
                 });                
             });
         }
@@ -366,18 +437,26 @@
             load.clear().draw();
             var tmp = `
                 <tr id="loadtr">
-                    <td colspan="8"><div class="loader">
-                        <div class="loader__figure"></div>
-                        <p class="loader__label">Loading</p>
-                    </div></td>
-                    <td style="display:none"></td>
-                    <td style="display:none"></td>
-                    <td style="display:none"></td>
-                    <td style="display:none"></td>
-                    <td style="display:none"></td>
-                    <td style="display:none"></td>
-                    <td style="display:none"></td>
-                </tr>
+                        <td colspan="8"><div class="loader">
+                            <div class="loader__figure"></div>
+                        </div></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                        <td style="display:none"></td>
+                    </tr>
                 `;
                 $('#example23 tbody').append(tmp);
             $.ajax({
@@ -395,15 +474,25 @@
                 console.log(result);
                 load.clear().draw();
                 var data_query;
-                result.forEach(item_query=>{
-                    load.row.add([`<img src="${item_query.image_path}" width="53" class="img-responsive avatar" >`,
-                        item_query.name,
-                        item_query.department,
-                        item_query.position,
-                        item_query.temperature,
-                        item_query.employee_id,
-                        item_query.time_checkin,
-                        item_query.time_checkout
+                result.forEach(item =>{
+                    load.row.add([item.employee_id, 
+                        `<img src="${item.image_path}" width="53" class="img-responsive avatar" >`, 
+                        item.name,
+                        item.function,
+                        item.position,
+                        item.location,
+                        item.company,
+                        item.email,
+                        item.phone,
+                        item.gender,
+                        item.birthday,
+                        item.date,
+                        item.duration,
+                        item.sub_function,
+                        item.time_checkin,
+                        item.time_checkout,
+                        item.employee_type,
+                        item.entry_date
                     ]).draw();
                 });
             });

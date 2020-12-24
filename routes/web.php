@@ -43,9 +43,9 @@ Route::group(['middleware' => 'authapi'], function(){
         Route::get('/excel-report/{time_start}/{time_end}/{thermal}', ['as' => 'excel_report_time', 'uses' => 'ReportController@ExcelReportTimeRange']);
         Route::post('/pass-variable', ['as' => 'pass_variable', 'uses' => 'ReportController@PassVar']);
 
-        Route::post('/pass-variable_pro', ['as' => 'pass_variable_pro', 'uses' => 'ReportController@PassVarPro']);
-        Route::get('/excel-report-today-pro', ['as' => 'excel_report_today_pro', 'uses' => 'ReportController@ExcelReportPro']);
-        Route::get('/excel-report-pro/{time_start}/{time_end}/{thermal}', ['as' => 'excel_report_time_pro', 'uses' => 'ReportController@ExcelReportTimeRangePro']);
+        Route::post('/pass-variable_raw', ['as' => 'pass_variable_raw', 'uses' => 'ReportController@PassVarRaw']);
+        Route::get('/excel-report-today-raw', ['as' => 'excel_report_today_raw', 'uses' => 'ReportController@ExcelReportRaw']);
+        Route::get('/excel-report-raw/{time_start}/{time_end}/{thermal}', ['as' => 'excel_report_time_raw', 'uses' => 'ReportController@ExcelReportTimeRangeRaw']);
         //system
         // Route::get('/system-config', ['as' => 'sys_conf', 'uses' => 'SystemController@index']);
         // Route::post('/system-config/post', ['as' => 'sys_conf_post', 'uses' => 'SystemController@post']);

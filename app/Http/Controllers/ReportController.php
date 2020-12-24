@@ -13,7 +13,13 @@ class ReportController extends Controller
 {
 
     public function ExcelReport(){
-        $data =  DB::Table('systemconfig')->select('Server_ip','thermal_ip','hiface_ip','username','password')->where('id',1)->get();
+        $thermal_list_check = new Requestapi('/api/v1/thermal-list');
+        $thermal_list_check = json_decode($thermal_list_check->methodGet());
+        $thermal_list = [];
+        foreach($thermal_list_check->thermalInfo as $k => $v){
+            $thermal_list[] = $v->name;
+        }
+
         $time = Carbon::now()->format('d-m-yy');
         $time = explode('-',$time);
         $time_start_now = json_encode(Carbon::create($time[2], $time[1], $time[0], 00, 00, 00, 'asia/ho_chi_minh')->settings([
@@ -33,15 +39,12 @@ class ReportController extends Controller
                 'content' => json_encode(array(
                     "start"=> ((int)$time_start_now)*1000,
                     "end"=> ((int)$time_end_now)*1000,
-                    "thermal_ip"=> $data[0]->thermal_ip,
-                    "hiface_ip"=> $data[0]->hiface_ip,
-                    "username"=> $data[0]->username,
-                    "password"=> $data[0]->password
+                    "thermal_name_list"=> $thermal_list,
                 ))
             )
         );
         $context  = stream_context_create($opts);
-        $data = file_get_contents('http://'.$data[0]->Server_ip.'/api/v1/report/excel', false, $context);
+        $data = file_get_contents(config('app.SERVER_IP').'/api/v1/report/excel', false, $context);
         $headers = array(
             'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           );
@@ -57,6 +60,7 @@ class ReportController extends Controller
     }
 
     public function ExcelReportTimeRange($time_start , $time_end , $thermal){
+
         $opts = array('http' =>
         array(
             'timeout' => 1200,
@@ -67,12 +71,12 @@ class ReportController extends Controller
                     "start"=> ((int)$time_start)*1000,
                     "end"=> ((int)$time_end)*1000,
                 ],
-                'thermal_name' => $thermal,
+                'thermal_name_list' => [$thermal],
                 ))
             )
         );
         $context  = stream_context_create($opts);
-        $data = file_get_contents(config('app.SERVER_IP').'/api/v1/report/excel', false, $context);
+        $data = file_get_contents(config('app.SERVER_IP').'/api/v1/report/excel?report_type=thermal_report', false, $context);
         $headers = array(
             'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         );
@@ -104,7 +108,7 @@ class ReportController extends Controller
         $link = route('excel_report_time',['time_start' => $start_time_stamp, 'time_end' => $end_time_stamp, 'thermal' => $thermal]);
         return response()->json(array('link' => $link));
     }
-    public function PassVarPro(Request $request){
+    public function PassVarRaw(Request $request){
         $start_time = explode('/',$request->input('start'));
         $end_time = explode('/',$request->input('end'));
         $thermal = $request->input('thermal');
@@ -119,10 +123,10 @@ class ReportController extends Controller
             },
         ]));
 
-        $link = route('excel_report_time_pro',['time_start' => $start_time_stamp, 'time_end' => $end_time_stamp, 'thermal' => $thermal]);
+        $link = route('excel_report_time_raw',['time_start' => $start_time_stamp, 'time_end' => $end_time_stamp, 'thermal' => $thermal]);
         return response()->json(array('link' => $link));
     }
-    public function ExcelReportTimeRangePro($time_start , $time_end , $thermal){
+    public function ExcelReportTimeRangeRaw($time_start , $time_end , $thermal){
         $opts = array('http' =>
         array(
             'timeout' => 1200,
@@ -133,12 +137,12 @@ class ReportController extends Controller
                     "start"=> ((int)$time_start)*1000,
                     "end"=> ((int)$time_end)*1000,
                 ],
-                'thermal_name' => $thermal,
+                'thermal_name_list' => [$thermal],
                 ))
             )
         );
         $context  = stream_context_create($opts);
-        $data = file_get_contents(config('app.SERVER_IP').'/api/v1/report/excel-pro', false, $context);
+        $data = file_get_contents(config('app.SERVER_IP').'/api/v1/report/excel?report_type=raw_data_employee', false, $context);
         $headers = array(
             'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         );

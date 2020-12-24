@@ -120,7 +120,7 @@
             $('#count_today').text(result.count_today).fadeIn();
             $('#remaining').text(result.number_of_employee).fadeIn();
         });      
-    },3000);
+    },10000);
     })();
 </script>
 

@@ -10,7 +10,6 @@ use Config;
 class HomeController extends Controller
 {
     private function requestapi($time_start, $time_end, $thermal){  //function call api 
-        // $table =  DB::Table('systemconfig')->select('thermal_ip','hiface_ip','username','password')->where('id',1)->get();
         $respon = new Requestapi('/api/v1/config');
         try{
             $conf = json_decode($respon->methodGet(null));
@@ -25,16 +24,19 @@ class HomeController extends Controller
                 "start"=> ((int)$time_start)*1000,
                 "end"=> ((int)$time_end)*1000,
             ],
-            'thermal_name' => $thermal
+            'thermal_name_list' => $thermal
             
         ]);
         $data = json_decode($data);
         foreach($data as $key => $value) //set value in object item
         {
-            $data[$key]->temperature = number_format((float)$data[$key]->temperature, 1, '.', '');
+            //$data[$key]->temperature = number_format((float)$data[$key]->temperature, 1, '.', '');
             $data[$key]->time_checkin = $data[$key]->time_checkin != null ? Carbon::createFromTimestamp(intval($data[$key]->time_checkin/1000))->timezone('asia/ho_chi_minh')->format('H:i:s Y-m-d') : null;
             $data[$key]->time_checkout = $data[$key]->time_checkout != null ? Carbon::createFromTimestamp(intval($data[$key]->time_checkout/1000))->timezone('asia/ho_chi_minh')->format('H:i:s Y-m-d') : null;
             //$data[$key]->image_path = 'data:image/jpeg;base64,'.base64_encode(file_get_contents('http://192.168.51.213'.$data[$key]->image_path));
+            $data[$key]->entry_date = $data[$key]->entry_date != null ? Carbon::createFromTimestamp(intval($data[$key]->entry_date/1000))->timezone('asia/ho_chi_minh')->format('H:i:s Y-m-d') : null;
+            $data[$key]->date = $data[$key]->date != null ? Carbon::createFromTimestamp(intval($data[$key]->date/1000))->timezone('asia/ho_chi_minh')->format('H:i:s Y-m-d') : null;
+            $data[$key]->birthday = $data[$key]->birthday != null ? Carbon::createFromTimestamp(intval($data[$key]->birthday/1000))->timezone('asia/ho_chi_minh')->format('Y-m-d') : null;
             $data[$key]->image_path = 'http://'.$conf->hiface_info->ip.$data[$key]->image_path;
         }
         return $data;
@@ -71,24 +73,8 @@ class HomeController extends Controller
     }
     
     public function test(){ //test data
-        // $data = '11/12/2020';
-        // $data = explode('/',$data);
-        // $return = Carbon::create($data[2], $data[1], $data[0], 00, 00, 00, 'asia/ho_chi_minh')->settings([
-        //     'toJsonFormat' => function ($date) {
-        //         return $date->getTimestamp();
-        //     },
-        // ]);
-
-        // //$data = Carbon::createFromFormat(,'UTC')->getTimestamp();
-        // dd(json_encode($return));
-        $respon = new Requestapi('/api/v1/config');
-        try{
-            $data = $respon->methodGet(null);
-        }catch(\GuzzleHttp\Exception\BadResponseException $e){
-            $data = null;
-        }
-        dd($data);
     }
+
     public function employee_index(){
         
         return view('employee');
@@ -111,30 +97,16 @@ class HomeController extends Controller
         $thermal_list_check = new Requestapi('/api/v1/thermal-list');
         $thermal_list_check = json_decode($thermal_list_check->methodGet());
         $thermal_check_null = new Requestapi('/api/v1/thermal/library');
-        $getkey = 0;
+        $thermal_list = [];
         foreach($thermal_list_check->thermalInfo as $k => $v){
-            $check = false;
-            try{
-                $thermal_check_null->getResponse(['name' => $v->name]);
-                $check = true;
-            }catch(\GuzzleHttp\Exception\BadResponseException $e){
-                $check = false;
-            }
-            if($check){
-                $getkey = $k;
-                break;
-            }
+            $thermal_list[] = $v->name;
         }
-
+            //dd(array_values($thermal_list_check->thermalInfo));
             try{
-                $data = $this->requestapi($time_start_now,$time_end_now, $thermal_list_check->thermalInfo[$getkey]->name);
+                $data = $this->requestapi($time_start_now,$time_end_now, $thermal_list);
             }catch(\GuzzleHttp\Exception\BadResponseException $e){
                 $data = [];
             }
-            // foreach($data as $key => $value){
-               
-            //     $data[$key]->image_path = $conf->hiface_info->ip.$data[$key]->image_path;
-            // }
         
         return response()->json($data);
     }
@@ -166,17 +138,11 @@ class HomeController extends Controller
         ]));
 
         try{
-            $data_api = $this->requestapi($start_time_stamp, $end_time_stamp,$request->input('thermal'));
+            $data_api = $this->requestapi($start_time_stamp, $end_time_stamp,[$request->input('thermal')]);
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             $data_api = [];
         }
-        foreach($data_api as $key => $value){
-            $img = '';
-            $dd = new Requestapi('/api/v1/cache/get-image?subjectId='.$value->subject_id);
-            $dd = json_decode($dd->methodGet());
-            $img = $dd->base64;
-            $data_api[$key]->image_path = $img;
-        }
+       
         return response()->json($data_api);
         //return response()->json(['start' => $start_time_stamp, 'end' => $end_time_stamp]);
     }
